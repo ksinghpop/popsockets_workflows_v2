@@ -7,7 +7,7 @@ services:
     env_file:
       - scheduler/.env
     ports:
-      - "8000:8000"
+      - "8000:8777"
     volumes:
       # - ./scheduler:/app/scheduler
       - ./popsockets_etl:/app/popsockets_etl
