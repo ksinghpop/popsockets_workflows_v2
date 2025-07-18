@@ -10,7 +10,7 @@ services:
       - "8777:8000"
     volumes:
       # - ./scheduler:/app/scheduler
-      - ./popsockets_etl:/app/popsockets_etl
+      - ./scheduler/popsockets_etl:/app/scheduler/popsockets_etl
 
   frontend:
     build:
