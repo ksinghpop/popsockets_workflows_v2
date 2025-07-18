@@ -52,3 +52,6 @@ test.txt
 *.Thumbs.db
 
 cmds/
+
+scheduler/popsockets_etl/data/
+scheduler/popsockets_etl/secrets/
