@@ -1,0 +1,25 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: python_workflows_fastapi_backend
+    env_file:
+      - scheduler/.env
+    ports:
+      - "8000:8000"
+    volumes:
+      # - ./scheduler:/app/scheduler
+      - ./popsockets_etl:/app/popsockets_etl
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: python_workflows_react_frontend
+    env_file:
+      - flow-ui/.env
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend

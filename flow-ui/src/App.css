@@ -1,0 +1,83 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* .table thead th {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.95rem;
+} */
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+
+/* Style all table headers consistently */
+table thead th {
+  background-color: #000 !important; /* Black background */
+  color: #fff !important;            /* White text */
+  font-weight: 400 !important;       /* Normal weight */
+}
+
+/* Make sure the link in the table is styled */
+table.table tbody tr td a.pipeline-name-link {
+  color: #13506a;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+table.table tbody tr td a.pipeline-name-link:hover {
+  color: #13506a;
+  text-decoration: underline;
+}
+
+.dag-run-id {
+  color: #13506a;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.dag-run-id:hover {
+  color: #13506a;
+  text-decoration: underline;
+}

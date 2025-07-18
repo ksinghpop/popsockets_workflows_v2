@@ -1,0 +1,50 @@
+# Stage 1: Build dependencies in an isolated builder
+FROM python:3.13.2-slim AS builder
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Install system dependencies temporarily for building
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    libpq-dev \
+ && rm -rf /var/lib/apt/lists/*
+
+# Install pip upgrade and install prod requirements
+COPY scheduler/requirements.txt .
+RUN pip install --upgrade pip && \
+    pip wheel --no-cache-dir --wheel-dir=/wheels -r requirements.txt
+
+# -------------------------------------------------
+# Stage 2: Final slim runtime image
+FROM python:3.13.2-slim
+
+WORKDIR /app/scheduler
+
+# Install only runtime system packages (no build tools)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev \
+ && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# Copy wheels and install without pip cache
+COPY --from=builder /wheels /wheels
+COPY --from=builder /app/requirements.txt .
+RUN pip install --no-cache-dir --no-index --find-links=/wheels -r requirements.txt && rm -rf /root/.cache/pip
+
+# Copy application code
+COPY scheduler/ ./
+# COPY popsockets_etl/ ./popsockets_etl/
+
+# Expose port
+EXPOSE 8000
+
+# Entrypoint command
+CMD ["gunicorn", "main:app", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8000", "-w", "2", "-t", "60"]

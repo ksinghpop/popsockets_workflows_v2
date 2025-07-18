@@ -1,0 +1,36 @@
+# Ignore Python cache
+**/__pycache__/
+*.py[cod]
+*.pyo
+
+# Ignore logs and temp files
+*.log
+*.tmp
+
+# Ignore virtual environments
+env/
+
+# Ignore git files
+.git
+.gitignore
+.gitattributes
+
+# Ignore IDE/editor files
+.vscode/
+.idea/
+
+# Ignore React build cache and dependencies
+flow-ui/node_modules/
+flow-ui/build/
+flow-ui/dist/
+flow-ui/package-lock.json
+
+# Ignore FastAPI test artifacts
+scheduler/.pytest_cache/
+scheduler/.mypy_cache/
+scheduler/.coverage
+
+# Ignore docs and readme if not needed in build
+README.md
+
+test.txt
