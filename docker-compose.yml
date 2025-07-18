@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile.backend
     container_name: python_workflows_fastapi_backend
     env_file:
-      - scheduler/.env
+      - scheduler/.env.local
     ports:
       - "8777:8000"
     volumes:
@@ -18,7 +18,7 @@ services:
       dockerfile: Dockerfile.frontend
     container_name: python_workflows_react_frontend
     env_file:
-      - flow-ui/.env
+      - flow-ui/.env.local
     ports:
       - "3000:80"
     depends_on:
