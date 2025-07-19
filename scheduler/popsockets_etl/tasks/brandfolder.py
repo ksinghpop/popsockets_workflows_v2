@@ -24,7 +24,7 @@ def get_credentials_key_file(warehouse,database,schema):
                             warehouse=warehouse,
                             database=database,
                             schema=schema,
-                            user=os.environ.get('SF_USER'),
+                            user=os.environ.get('SF_USER_2'),
                             private_key_path=os.environ.get('SF_RSA_PRIVATE_KEY_PATH'),
                             role=os.environ.get('SF_ROLE')
                         )
