@@ -29,6 +29,7 @@ WORKDIR /app/scheduler
 # Install only runtime system packages (no build tools)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
+    libmagic1 \
  && rm -rf /var/lib/apt/lists/*
 
 # Set environment variables
