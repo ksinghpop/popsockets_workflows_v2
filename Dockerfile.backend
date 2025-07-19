@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
     libpq-dev \
+    libmagic-dev \
  && rm -rf /var/lib/apt/lists/*
 
 # Install pip upgrade and install prod requirements
