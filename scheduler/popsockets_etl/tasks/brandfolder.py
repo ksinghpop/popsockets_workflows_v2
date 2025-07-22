@@ -26,7 +26,7 @@ def get_credentials_key_file(warehouse,database,schema):
                             schema=schema,
                             user=os.environ.get('SF_USER_2'),
                             private_key_path=os.environ.get('SF_RSA_PRIVATE_KEY_PATH'),
-                            role=os.environ.get('SF_ROLE')
+                            role=os.environ.get('SF_ROLE_2')
                         )
     return credentials
 
@@ -41,6 +41,7 @@ def organisation_task():
     params = BrandfolderParams(per=100,fields='created_at,updated_at')
     api_config = BrandfolderApiConfig(uri=uri,params=params,api_key=BRANDFOLDER_API_KEY)
     sf_credentials = get_credentials_key_file(warehouse="DEV_ANALYSTS_XS",database=PRODUCTION_DB,schema=PRODUCTION_SCHEMA)
+    print(sf_credentials,flush=True)
     response = organisation(brandflder_api_config=api_config,snowflake_credentials=sf_credentials)
     return response
     # return None
