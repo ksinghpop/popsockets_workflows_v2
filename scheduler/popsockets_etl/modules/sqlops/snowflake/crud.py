@@ -70,16 +70,16 @@ class SelectQuery:
         if limit is None:
             query = None
             if sorting is not None:
-                query = sqlalchemy.select(columns_list).order_by(sorting)
+                query = sqlalchemy.select(*columns_list).order_by(sorting)
             else:
-                query = sqlalchemy.select(columns_list)
+                query = sqlalchemy.select(*columns_list)
             return query
         else:
             query = None
             if sorting is not None:
-                query = sqlalchemy.select(columns_list).order_by(sorting).limit(limit)
+                query = sqlalchemy.select(*columns_list).order_by(sorting).limit(limit)
             else:
-                query = sqlalchemy.select(columns_list).order_by(sorting)
+                query = sqlalchemy.select(*columns_list).order_by(sorting)
             return query
 
     def select_by_daterange(self,start_date:str,end_date:str,start_date_column:str,end_date_column:str):
@@ -106,16 +106,16 @@ class SelectQuery:
         if limit is None:
             query = None
             if sorting is not None:
-                query = sqlalchemy.select(columns_list).where(conditions).order_by(sorting)
+                query = sqlalchemy.select(*columns_list).where(conditions).order_by(sorting)
             else:
-                query = sqlalchemy.select(columns_list).where(conditions)
+                query = sqlalchemy.select(*columns_list).where(conditions)
             return query
         else:
             query = None
             if sorting is not None:
-                query = sqlalchemy.select(columns_list).where(conditions).order_by(sorting).limit(limit)
+                query = sqlalchemy.select(*columns_list).where(conditions).order_by(sorting).limit(limit)
             else:
-                query = sqlalchemy.select(columns_list).where(conditions).order_by(sorting)
+                query = sqlalchemy.select(*columns_list).where(conditions).order_by(sorting)
             return query
     
     def select_in_chunk(self,limit:int,offset:int):
