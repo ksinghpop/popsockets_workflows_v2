@@ -1,11 +1,12 @@
 from popsockets_etl.modules.apis.brandfolder.apiv4 import BrandfolderApi, BrandfolderApiConfig, BrandfolderURIs, process_included_data
 from popsockets_etl.modules.transformation.brandfolder.mapping import Map
-from popsockets_etl.modules.sqlops.snowflake.credentials import SFCredentials
+from popsockets_etl.modules.sqlops.snowflake.credentials import SFCredentials, SFCredentialsKeyFile
 from popsockets_etl.modules.sqlops.snowflake.engine import Engine
 from popsockets_etl.modules.sqlops.snowflake.schema import SFLoadTableSchema, create_table_from_dataframe, DDLObject
 from popsockets_etl.modules.sqlops.snowflake.crud import InsertQuery, DeleteQuery, SelectQuery
 from popsockets_etl.modules.transformation.generic import chunk_list
 import inspect
+from typing import Union
 import datetime as dt
 import json
 import pandas as pd
@@ -13,7 +14,7 @@ import numpy as np
 
 def organisation(
                 brandflder_api_config:BrandfolderApiConfig,
-                snowflake_credentials:SFCredentials,):
+                snowflake_credentials:Union[SFCredentials,SFCredentialsKeyFile]):
     table_name = inspect.currentframe().f_code.co_name
     sql_engine = Engine(snowflake_credentials)
     sql_table = SFLoadTableSchema(sql_engine.get_engine()).load_table(table_name)
@@ -58,7 +59,7 @@ def organisation(
 
 def brandfolder(
                 brandflder_api_config:BrandfolderApiConfig,
-                snowflake_credentials:SFCredentials):
+                snowflake_credentials:Union[SFCredentials,SFCredentialsKeyFile]):
     table_name = inspect.currentframe().f_code.co_name
     sql_engine = Engine(snowflake_credentials)
     sql_table = SFLoadTableSchema(sql_engine.get_engine()).load_table(table_name)
@@ -103,7 +104,7 @@ def brandfolder(
 
 def section(
             brandflder_api_config:BrandfolderApiConfig,
-            snowflake_credentials:SFCredentials):
+            snowflake_credentials:Union[SFCredentials,SFCredentialsKeyFile]):
     table_name = inspect.currentframe().f_code.co_name
     select_table_name = 'brandfolder'
     sql_engine = Engine(snowflake_credentials)
@@ -153,7 +154,7 @@ def section(
 
 def asset(
         brandflder_api_config:BrandfolderApiConfig,
-        snowflake_credentials:SFCredentials):
+        snowflake_credentials:Union[SFCredentials,SFCredentialsKeyFile]):
         table_name = inspect.currentframe().f_code.co_name
         select_table_name = 'brandfolder'
         sql_engine = Engine(snowflake_credentials)
@@ -220,7 +221,7 @@ def asset(
 
 def attachment(
             brandflder_api_config:BrandfolderApiConfig,
-            snowflake_credentials:SFCredentials):
+            snowflake_credentials:Union[SFCredentials,SFCredentialsKeyFile]):
     table_name = inspect.currentframe().f_code.co_name
     select_table_name = 'brandfolder'
     sql_engine = Engine(snowflake_credentials)
@@ -272,7 +273,7 @@ def attachment(
         pos += 1
     return True
 
-def asset_custom_fields(snowflake_credentials:SFCredentials,select_table_last_hours:int=None):
+def asset_custom_fields(snowflake_credentials:Union[SFCredentials,SFCredentialsKeyFile],select_table_last_hours:int=None):
     table_name = inspect.currentframe().f_code.co_name
     select_table_name = 'asset'
     sql_engine = Engine(snowflake_credentials)
@@ -317,7 +318,7 @@ def asset_custom_fields(snowflake_credentials:SFCredentials,select_table_last_ho
 
     return True
 
-def asset_collections(snowflake_credentials:SFCredentials,select_table_last_hours:int=None):
+def asset_collections(snowflake_credentials:Union[SFCredentials,SFCredentialsKeyFile],select_table_last_hours:int=None):
     table_name = inspect.currentframe().f_code.co_name
     select_table_name = 'asset'
     sql_engine = Engine(snowflake_credentials)
@@ -364,7 +365,7 @@ def asset_collections(snowflake_credentials:SFCredentials,select_table_last_hour
 
 def collection(
             brandflder_api_config:BrandfolderApiConfig,
-            snowflake_credentials:SFCredentials):
+            snowflake_credentials:Union[SFCredentials,SFCredentialsKeyFile]):
     table_name = inspect.currentframe().f_code.co_name
     select_table_name = 'brandfolder'
     sql_engine = Engine(snowflake_credentials)
@@ -412,7 +413,7 @@ def collection(
                 loop_status = False
     return True
 
-def brandfolder_sku_urls(snowflake_credentials:SFCredentials):
+def brandfolder_sku_urls(snowflake_credentials:Union[SFCredentials,SFCredentialsKeyFile]):
     print("Extracting data...")
     engine = Engine(snowflake_credentials)
     engine_loaded = engine.get_engine()
