@@ -20,7 +20,8 @@
     "reactflow": "^11.11.4",
     "sweetalert2": "^11.22.2",
     "web-vitals": "^2.1.4",
-    "antd": "^5.13.1"
+    "antd": "^5.13.1",
+    "axios": "^1.6.0"
   },
   "scripts": {
     "start": "react-scripts start",
