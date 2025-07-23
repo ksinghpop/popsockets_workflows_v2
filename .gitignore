@@ -13,7 +13,7 @@ __pycache__/
 .vscode/
 .idea/
 *.bak
-
+popsockets_workflows_v2.zip
 # Node modules
 flow-ui/node_modules
 flow-ui/.env

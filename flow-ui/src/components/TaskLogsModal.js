@@ -1,43 +1,49 @@
-import React from "react";
-import Modal from "react-modal";
+import React, { useEffect, useState } from 'react';
+import { Modal, Button, Typography } from 'antd';
+import axios from 'axios';
 
-export default function TaskLogsModal({ isOpen, onRequestClose, task }) {
+const { Paragraph } = Typography;
+
+const TaskLogsModal = ({ visible, onClose, runId, taskId }) => {
+  const [logs, setLogs] = useState([]);
+
+  useEffect(() => {
+    let interval;
+    const fetchLogs = async () => {
+      if (!runId || !taskId) return;
+      try {
+        const response = await axios.get(`/dag_runs/logs/${runId}/${taskId}`);
+        setLogs(response.data.logs);
+      } catch (err) {
+        setLogs(prev => [...prev, '⚠️ Failed to load logs']);
+      }
+    };
+
+    if (visible) {
+      fetchLogs(); // initial
+      interval = setInterval(fetchLogs, 5000); // poll every 5s
+    }
+
+    return () => clearInterval(interval);
+  }, [visible, runId, taskId]);
+
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
-      contentLabel="Task Logs"
-      style={{
-        content: {
-          top: "50%",
-          left: "50%",
-          right: "auto",
-          bottom: "auto",
-          marginRight: "-50%",
-          transform: "translate(-50%, -50%)",
-          maxHeight: "70vh",
-          width: "500px"
-        }
-      }}
+      title={`Logs for Task ${taskId}`}
+      visible={visible}
+      onCancel={onClose}
+      footer={<Button onClick={onClose}>Close</Button>}
+      width={800}
     >
-      <h3>{task?.name}</h3>
-      <pre
-        style={{
-          background: "#f5f5f5",
-          padding: "1rem",
-          border: "1px solid #ddd",
-          maxHeight: "50vh",
-          overflowY: "auto"
-        }}
-      >
-        {task?.logs}
-      </pre>
-      <button
-        onClick={onRequestClose}
-        className="btn btn-primary mt-3"
-      >
-        Close
-      </button>
+      <div style={{ maxHeight: '60vh', overflowY: 'scroll', backgroundColor: '#111', color: '#0f0', padding: 10 }}>
+        {logs.length > 0 ? (
+          logs.map((line, idx) => <Paragraph key={idx} style={{ marginBottom: 0 }}>{line}</Paragraph>)
+        ) : (
+          <Paragraph type="secondary">Waiting for logs...</Paragraph>
+        )}
+      </div>
     </Modal>
   );
-}
+};
+
+export default TaskLogsModal;

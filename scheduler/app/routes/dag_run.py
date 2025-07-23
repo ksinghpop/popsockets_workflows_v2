@@ -151,3 +151,9 @@ async def delete_dag_run(dag_run_id: str = Path(..., description="Run ObjectId")
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Run not found")
     return {"message": "Dag Run deleted"}
+
+
+@router.get("/logs/{run_id}/{task_id}")
+def get_task_logs(run_id: str, task_id: str):
+    cursor = db.logs.find({"run_id": ObjectId(run_id), "task_id": ObjectId(task_id)}).sort("timestamp", 1)
+    return {"logs": [doc["log"] for doc in cursor]}

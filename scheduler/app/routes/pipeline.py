@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Path, Query
+from fastapi import APIRouter, HTTPException, Path, Query, BackgroundTasks
 from app.schema.pipeline import PipelineCreate, PipelineUpdate, PipelineDetail
 from app.db import db
 from app.helpers import run_pipeline, parse_cron
@@ -185,7 +185,7 @@ async def create_pipeline(pipeline: PipelineCreate):
     return {"id": pipeline_id, "message": "Pipeline created"}
 
 @router.post("/{pipeline_id}/run")
-async def run_pipeline_manually(pipeline_id: str):
+async def run_pipeline_manually(pipeline_id: str, background_tasks: BackgroundTasks):
     """
     Manually trigger a pipeline run immediately.
     """
@@ -196,7 +196,6 @@ async def run_pipeline_manually(pipeline_id: str):
 
     # Call the run_pipeline function (synchronously)
     # In production, you might want to run this in the background
-    await run_pipeline(pipeline_id)
+    background_tasks.add_task(run_pipeline, pipeline_id)
 
     return {"message": "Pipeline manual execution triggered"}
-

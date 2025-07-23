@@ -49,4 +49,4 @@ COPY scheduler/ ./
 EXPOSE 8000
 
 # Entrypoint command
-CMD ["gunicorn", "main:app", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8000", "-w", "2", "-t", "180"]
+CMD ["gunicorn", "main:app", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8000", "-w", "2", "-t", "1800"]

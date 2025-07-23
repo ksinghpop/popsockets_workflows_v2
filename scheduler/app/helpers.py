@@ -4,12 +4,23 @@ from bson import ObjectId
 from app.db import db
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import traceback
+import threading
+
 import io
 import sys
 import functools
 import os
 from dotenv import load_dotenv
 load_dotenv()
+
+
+def log_to_db(run_id, task_id, log_msg):
+    db.logs.insert_one({
+        "run_id": run_id,
+        "task_id": task_id,
+        "timestamp": dt.datetime.utcnow(),
+        "log": log_msg
+    })
 
 ETL_MODULE_PREFIX = os.environ.get("ETL_MODULE_PREFIX", "popsockets_etl")
 
@@ -82,7 +93,7 @@ async def run_pipeline(pipeline_id: str, max_retries: int = int(os.environ.get("
         }
         try:
             func = resolve_function(task["function_name"])
-            wrapped_func = capture_logs(func)
+            wrapped_func = capture_logs(func, run_id, task_id=task_id)
             result = wrapped_func(**task["params"])
             task_status["status"] = "success"
             task_status["logs"] = str(result['logs'])
@@ -123,12 +134,12 @@ async def run_pipeline(pipeline_id: str, max_retries: int = int(os.environ.get("
                     )
                 else:
                     # Decrement retry count
-                    print("==============================",flush=True)
-                    print(f"TID: {t_id}",flush=True)
-                    print("==============================",flush=True)
+                    log_to_db(run_id, t_id, "==============================")
+                    log_to_db(run_id, t_id, f"TID: {t_id}")
+                    log_to_db(run_id, t_id, "==============================")
                     retries_left[t_id] -= 1
                     if retries_left[t_id] > 0:
-                        print(f"Task {task_map[t_id]['name']} failed. Retrying... Remaining retries: {retries_left[t_id]}")
+                        log_to_db(run_id, t_id, f"Task {task_map[t_id]['name']} failed. Retrying... Remaining retries: {retries_left[t_id]}")
                     else:
                         # Mark pipeline failed
                         db.dag_runs.update_one(
@@ -145,22 +156,38 @@ async def run_pipeline(pipeline_id: str, max_retries: int = int(os.environ.get("
     )
 
 
-def capture_logs(func):
-    """
-    Decorator that captures stdout prints and returns them with the result.
-    """
+class LogStreamer:
+    def __init__(self, run_id, task_id):
+        self.run_id = run_id
+        self.task_id = task_id
+        self._buffer = io.StringIO()
+        self._lock = threading.Lock()
+        self._original_stdout = sys.stdout
+
+    def write(self, data):
+        with self._lock:
+            self._buffer.write(data)
+            self._original_stdout.write(data)  # also stream to original stdout
+            log_to_db(self.run_id, self.task_id, data.strip())
+
+    def flush(self):
+        pass  # Required for compatibility
+
+def capture_logs(func, run_id=None, task_id=None):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        buffer = io.StringIO()
-        old_stdout = sys.stdout
-        sys.stdout = buffer
+        log_streamer = LogStreamer(run_id, task_id)
+        sys.stdout = log_streamer
         try:
             result = func(*args, **kwargs)
-            output = buffer.getvalue()
             return {
                 "result": result,
-                "logs": output
+                "logs": ""  # logs streamed already
             }
+        except Exception as e:
+            tb = traceback.format_exc()
+            log_streamer.write(tb)  # stream traceback
+            raise  # re-raise the error so status logic still works
         finally:
-            sys.stdout = old_stdout
+            sys.stdout = log_streamer._original_stdout
     return wrapper
