@@ -57,3 +57,5 @@ scheduler/popsockets_etl/data/
 scheduler/popsockets_etl/secrets/
 
 **test**
+
+.github/
