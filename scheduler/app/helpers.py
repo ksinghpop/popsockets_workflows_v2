@@ -16,8 +16,8 @@ load_dotenv()
 
 def log_to_db(run_id, task_id, log_msg):
     db.logs.insert_one({
-        "run_id": run_id,
-        "task_id": task_id,
+        "run_id": ObjectId(run_id),
+        "task_id": ObjectId(task_id),
         "timestamp": dt.datetime.utcnow(),
         "log": log_msg
     })
