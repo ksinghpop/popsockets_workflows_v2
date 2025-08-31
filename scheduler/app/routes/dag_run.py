@@ -155,5 +155,17 @@ async def delete_dag_run(dag_run_id: str = Path(..., description="Run ObjectId")
 
 @router.get("/logs/{run_id}/{task_id}")
 def get_task_logs(run_id: str, task_id: str):
-    cursor = db.logs.find({"run_id": ObjectId(run_id), "task_id": ObjectId(task_id)}).sort("timestamp", 1)
+    # Try both ObjectId and string for compatibility
+    try:
+        run_oid = ObjectId(run_id)
+        task_oid = ObjectId(task_id)
+    except Exception:
+        run_oid = run_id
+        task_oid = task_id
+    cursor = db.logs.find({
+        "$or": [
+            {"run_id": run_oid, "task_id": task_oid},
+            {"run_id": run_id, "task_id": task_id}
+        ]
+    }).sort("timestamp", 1)
     return {"logs": [doc["log"] for doc in cursor]}
